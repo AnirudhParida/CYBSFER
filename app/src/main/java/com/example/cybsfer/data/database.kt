@@ -115,7 +115,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             while (!cursor.isAfterLast) {
                 if (taskIdIndex != -1 && titleIndex != -1 && descriptionIndex != -1 && dateIndex != -1 && userIdIndex != -1) {
                     val task = Task(
-                        cursor.getInt(taskIdIndex),
+                        cursor.getLong(taskIdIndex),
                         cursor.getString(titleIndex),
                         cursor.getString(descriptionIndex),
                         cursor.getString(dateIndex),
@@ -129,6 +129,18 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         cursor.close()
         return taskList
+    }
+
+    fun updateTask(task: Task) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(KEY_TASK_TITLE, task.title)
+        values.put(KEY_TASK_DESCRIPTION, task.description)
+        values.put(KEY_TASK_DATE, task.date)
+        values.put(KEY_TASK_USER_ID, task.userId)
+
+        db.update(TABLE_TASKS, values, "$KEY_TASK_ID = ?", arrayOf(task.id.toString()))
+        db.close()
     }
 
     fun deleteTask(taskId: Long) {
